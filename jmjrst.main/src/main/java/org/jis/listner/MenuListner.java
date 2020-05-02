@@ -76,11 +76,11 @@ public class MenuListner implements ActionListener {
       new AboutBox(m);
       System.gc();
     }
-    else if (e.getSource() == menu.gener || e.getSource() == m.toolBar.gener) m.generator.generate(false);
-    else if (e.getSource() == menu.zippen || e.getSource() == m.toolBar.zippen) m.generator.generate(true);
-    else if (e.getSource() == menu.gallerie || e.getSource() == m.toolBar.gallerie) new GallerieDialog(m);
-    else if (e.getSource() == menu.exit) System.exit(0);
-    else if (e.getSource() == menu.set_quality || e.getSource() == m.toolBar.preferences) m.openOptions();
+    else if (e.getSource() == menu.gener || e.getSource() == m.toolBar.gener) { m.generator.generate(false); }
+    else if (e.getSource() == menu.zippen || e.getSource() == m.toolBar.zippen) { m.generator.generate(true); }
+    else if (e.getSource() == menu.gallerie || e.getSource() == m.toolBar.gallerie) { new GallerieDialog(m); }
+    else if (e.getSource() == menu.exit) { System.exit(0); }
+    else if (e.getSource() == menu.set_quality || e.getSource() == m.toolBar.preferences) { m.openOptions(); }
     else if (e.getSource() == menu.look_windows)
     {
       m.setLookFeel(winClassName);

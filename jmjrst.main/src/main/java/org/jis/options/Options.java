@@ -109,13 +109,11 @@ public class Options implements Serializable {
         antialiasing = Boolean.parseBoolean(p.getProperty("antialiasing"));
         copyMetadata = Boolean.parseBoolean(p.getProperty("copyMetadata"));
       }
-      catch (RuntimeException e)
-      {
+      catch (RuntimeException e) {
         saveOptions();
       }
     }
-    catch (Exception e)
-    {
+    catch (Exception e) {
       saveOptions();
     }
 
