@@ -1,0 +1,17 @@
+Index: jmjrst.main/src/main/java/org/jis/generator/LayoutGalerie.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- jmjrst.main/src/main/java/org/jis/generator/LayoutGalerie.java	(revision 619bdf03f7c0f6eb557e2ca37f9f43511bfefc4d)
++++ jmjrst.main/src/main/java/org/jis/generator/LayoutGalerie.java	(date 1588510633138)
+@@ -549,7 +549,8 @@
+   public void copyFile(File file, File ziel) throws FileNotFoundException, IOException
+   {
+     in = new BufferedInputStream(new FileInputStream(file));
+-    out = new BufferedOutputStream(new FileOutputStream(ziel, true));
++    // change the append to false
++    out = new BufferedOutputStream(new FileOutputStream(ziel, false));
+     int bytes = 0;
+     while ((bytes = in.read()) != -1)
+     {
