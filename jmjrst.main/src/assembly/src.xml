@@ -11,7 +11,9 @@
 			<includes>
 				<include>pom.xml</include>
 				<include>LICENSE</include>
-				<include>.gitignore</include>
+				<include>gitignore.zip</include>
+				<include>checkstyle.launch</include>
+				<include>integration-test.launch</include>
 			</includes>
 		</fileSet>
 
