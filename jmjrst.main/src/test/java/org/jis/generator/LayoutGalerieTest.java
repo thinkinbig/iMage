@@ -140,7 +140,7 @@ public class LayoutGalerieTest {
 	 *  Test if the copyFile() proceeds when the fromFile is not readable
 	 *  my OS runs with file-lock somehow not as expected, no matter with
 	 *  tryLock() or lock()
-	 *  @throws IOException expected
+	 *  @throws IOException expected permission denied
 	 */
 	@Test(expected = IOException.class)
 	public final void testCopyFile5() throws IOException {
@@ -163,7 +163,7 @@ public class LayoutGalerieTest {
 
 	/**
 	 *  Test if the copyFile() will run if the toFile is not granted writing authorize
-	 * @throws IOException expected
+	 * @throws IOException expected permission denied
 	 */
 	@Test(expected = IOException.class)
 	public final void testCopyFile6() throws IOException {
