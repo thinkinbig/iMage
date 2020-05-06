@@ -10,15 +10,19 @@ import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Vector;
+import java.util.regex.Pattern;
 
 import static org.junit.Assert.*;
 
@@ -46,6 +50,8 @@ public class GeneratorTest {
    */
   private BufferedImage rotatedImageTestResult;
 
+  private final URL testClasses = this.getClass().getResource("");
+
   /**
    * Sicherstellen, dass das Ausgabeverzeichnis existiert und leer ist.
    */
@@ -67,8 +73,9 @@ public class GeneratorTest {
     this.testImage = null;
     this.imeta = null;
     this.rotatedImageTestResult = null;
-    
+
     final URL imageResource = this.getClass().getResource(IMAGE_FILE);
+
     imageName = extractFileNameWithoutExtension(new File(imageResource.getFile()));
    
     try (ImageInputStream iis = ImageIO.createImageInputStream(imageResource.openStream())) {
@@ -105,6 +112,7 @@ public class GeneratorTest {
     File outputFile = new File(
         MessageFormat.format("{0}/{1}_rotated_{2}.jpg", TEST_DIR, imageName, time));
 
+
     if (this.rotatedImageTestResult != null) {
       try (FileOutputStream fos = new FileOutputStream(outputFile);
            ImageOutputStream ios = ImageIO.createImageOutputStream(fos)) {
@@ -120,6 +128,14 @@ public class GeneratorTest {
         writer.dispose();
       } catch (IOException e) {
         fail();
+      }
+    } else {
+      // clean all non rotating files
+      for (File item : TEST_DIR.listFiles()) {
+        final Pattern pattern = Pattern.compile(imageName + "_rotated_.*");
+        if (!pattern.matcher(extractFileNameWithoutExtension(item)).matches()) {
+          item.delete();
+        }
       }
     }
   }
@@ -198,6 +214,30 @@ public class GeneratorTest {
       }
     }
   }
+
+  /**
+   *  Test if generator can create zip
+   */
+  @Test
+  public final void testCreateZip() {
+    File zipName = new File(TEST_DIR, "test.zip");
+    assertFalse(zipName.exists());
+    Vector<File> selected = new Vector<>();
+    File test = new File("test");
+    try {
+      test.createNewFile();
+    } catch (IOException e) {
+      fail();
+    }
+    selected.add(test);
+    generator.createZip(zipName, selected);
+    assertTrue(zipName.exists());
+  }
+
+  @Test
+  public final void testGenerate() {
+  }
+
 
   /**
    * Check if two images are identical - pixel wise.

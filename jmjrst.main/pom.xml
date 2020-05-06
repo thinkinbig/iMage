@@ -4,32 +4,25 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+
+    <groupId>swt1.ub1.a2</groupId>
+    <artifactId>2256060</artifactId>
+    <version>1.0-SNAPSHOT</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>14</maven.compiler.source>
         <maven.compiler.target>14</maven.compiler.target>
     </properties>
 
-
-
-    <groupId>swt.ub1.a1</groupId>
-    <artifactId>2256060</artifactId>
-    <version>1.0-SNAPSHOT</version>
     <build>
         <plugins>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.4</version>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.1.1</version>
                 <configuration>
-                    <archive>
-                        <manifest>
-                            <classpathPrefix>lib/</classpathPrefix>
-                            <addClasspath>true</addClasspath>
-                            <mainClass>org.jis.Main</mainClass>
-                        </manifest>
-                    </archive>
+                    <consoleOutput>true</consoleOutput>
+                    <configLocation>${basedir}/src/test/resources/checkstyle_swt1.xml</configLocation>
                 </configuration>
             </plugin>
 
@@ -51,17 +44,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.1.1</version>
-                <configuration>
-                    <consoleOutput>true</consoleOutput>
-                    <configLocation>${basedir}/src/test/resources/checkstyle_swt1.xml</configLocation>
-                </configuration>
-            </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -70,8 +52,8 @@
                     <target>14</target>
                 </configuration>
             </plugin>
-        </plugins>
 
+        </plugins>
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -81,26 +63,46 @@
                 </plugin>
             </plugins>
         </pluginManagement>
-
     </build>
+
+    <scm>
+        <connection>scm:git:file:///</connection>
+        <url>scm:git:file:///</url>
+    </scm>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.7.30</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>1.7.30</version>
+            </dependency>
+            <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
+                <version>4.13</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
-
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
     </dependencies>
-
 </project>
