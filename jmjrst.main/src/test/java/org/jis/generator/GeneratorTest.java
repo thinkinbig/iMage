@@ -1,9 +1,7 @@
 package org.jis.generator;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.jis.Main;
+import org.junit.*;
 
 import javax.imageio.*;
 import javax.imageio.metadata.IIOMetadata;
@@ -12,9 +10,9 @@ import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.MessageFormat;
@@ -35,7 +33,9 @@ public class GeneratorTest {
   private int imageHeight, imageWidth;
   private static final File TEST_DIR = new File("target/test");
   private static final String IMAGE_FILE = "/image.jpg";
+  private File image;
   private String imageName;
+  private Main mockMain;
 
   /**
    * Input for test cases
@@ -50,7 +50,6 @@ public class GeneratorTest {
    */
   private BufferedImage rotatedImageTestResult;
 
-  private final URL testClasses = this.getClass().getResource("");
 
   /**
    * Sicherstellen, dass das Ausgabeverzeichnis existiert und leer ist.
@@ -66,16 +65,31 @@ public class GeneratorTest {
     }
   }
 
+  /**
+   *  Unglücklicherweise bin ich mit mock nicht vertraut. ich wende an Reflection
+   * @throws NoSuchMethodException no default constructor
+   * @throws IllegalAccessException
+   * @throws InvocationTargetException
+   * @throws InstantiationException
+   */
   @Before
-  public void setUp() {
-    this.generator = new Generator(null, 0);
-
+  public void setUp() throws NoSuchMethodException, IllegalAccessException,
+          InvocationTargetException, InstantiationException {
+    Constructor c = Main.class.getDeclaredConstructor();
+    c.setAccessible(true);
+    mockMain = (Main) c.newInstance();
+    this.generator = new Generator(mockMain, 0);
     this.testImage = null;
     this.imeta = null;
     this.rotatedImageTestResult = null;
 
     final URL imageResource = this.getClass().getResource(IMAGE_FILE);
 
+    try {
+      image = new File(imageResource.toURI());
+    } catch (URISyntaxException e) {
+      fail();
+    }
     imageName = extractFileNameWithoutExtension(new File(imageResource.getFile()));
    
     try (ImageInputStream iis = ImageIO.createImageInputStream(imageResource.openStream())) {
@@ -234,9 +248,129 @@ public class GeneratorTest {
     assertTrue(zipName.exists());
   }
 
+
+  /**
+   * generate an image that is 2 scale bigger as the normal one, not print
+   */
   @Test
-  public final void testGenerate() {
+  public final void testGenerateImage_Expand(){
+    try {
+      File receive = generator.generateImage(image, TEST_DIR, false, imageWidth * 2,
+              imageHeight * 3, "");
+      BufferedImage actual = ImageIO.read(receive);
+      assertTrue(receive.exists());
+      assertEquals(imageHeight * 3 ,actual.getHeight());
+      assertEquals(imageWidth * 3, actual.getWidth());
+    } catch (IOException e) {
+      fail();
+    }
   }
+
+  /**
+   * generate an image that is smaller as the normal one
+   */
+  @Test
+  public final void testGenerateImage_Shrink(){
+    try {
+      File receive = generator.generateImage(image, TEST_DIR, true, imageWidth / 2,
+              imageHeight / 3, "");
+      BufferedImage actual = ImageIO.read(receive);
+      assertTrue(receive.exists());
+      assertEquals(imageHeight / 3 ,actual.getHeight());
+      assertEquals(imageWidth / 3, actual.getWidth());
+    } catch (IOException e) {
+      fail();
+    }
+  }
+
+
+
+  /**
+   * test if the image can be rotated
+   * this method can't run because rotate() has exception
+   */
+  @Test
+  public final void testRotateWithAngle() {
+    try {
+      File test = generator.generateImage(image, TEST_DIR, false, imageWidth,
+              imageHeight, "");
+      assertTrue(test != null);
+      generator.rotate(test, 90);
+      assertTrue(test.exists());
+    } catch (IOException e) {
+      fail();
+    }
+  }
+
+  /**
+   * test if the file can rotate
+   * error occurs but was caught by Generator
+   * @throws IOException image not generate
+   */
+  @Test
+  public final void testRotate() throws IOException {
+    File test = generator.generateImage(image, TEST_DIR, false, imageWidth,
+            imageHeight, "");
+    assertTrue(test != null);
+    generator.rotate(test);
+    assertTrue(test.exists());
+  }
+
+  /**
+   * Test generate if text can generate image
+   */
+  @Test
+  public final void testGenerateText() {
+    generator.generateText(image, TEST_DIR, imageWidth, imageHeight);
+
+    // check if the files contains export file
+    File receive = null;
+    for (File file : TEST_DIR.listFiles()) {
+      if (file.getName().equals("t_" + imageName + ".jpg")) {
+        receive = file;
+        break;
+      }
+    }
+    try {
+      BufferedImage bi = ImageIO.read(receive);
+      // it strange why these two picture all not as big
+      assertTrue(bi != null);
+    } catch (IOException e) {
+      fail();
+    }
+  }
+
+  /**
+   *  Test generate Text when input and output are directory
+   */
+  @Test
+  public final void testGenerateText_Dir() {
+    File in = new File("target/test-classes");
+    generator.generateText(in, TEST_DIR, imageWidth, imageHeight);
+    File receive = null;
+    for (File file : TEST_DIR.listFiles()) {
+      receive = file;
+      break;
+    }
+    try {
+      BufferedImage bi = ImageIO.read(receive);
+      // it strange why these two picture all not as big
+      assertTrue(bi != null);
+    } catch (IOException e) {
+      fail();
+    }
+  }
+
+  /**
+   *  No idea how it works
+   */
+  @Test
+  @Ignore
+  public final void test() {
+    generator.generate(false);
+  }
+
+
 
 
   /**
